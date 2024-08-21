@@ -35,11 +35,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init(){
+        adapter.setOnClickListener(object :
+            TaskAdapter.OnClickListener {
+                override fun onClick(position: Int, model: Task) {
+                    val intent = Intent(this@MainActivity, EditActivity::class.java)
+                    // Passing the data to the
+                    // EmployeeDetails Activity
+                    intent.putExtra("position", position)
+                    intent.putExtra("task", model)
+                    editLauncher.launch(intent)
+                }
+            }
+        )
+
         editLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
                 result -> if (result.resultCode == RESULT_OK){
                 val d = result.data
+                val pos = d?.getIntExtra("position", -1)
                 val task = d?.getSerializableExtra("task") as Task
-                adapter.addTask(task)
+                adapter.addTask(task, pos!!)
                 binding.addBtn.setBackgroundColor(Color.parseColor(task.color))
             }
         }
@@ -48,9 +62,9 @@ class MainActivity : AppCompatActivity() {
             rcView.layoutManager = LinearLayoutManager(this@MainActivity)
             rcView.adapter = adapter
             addBtn.setOnClickListener{
-                editLauncher.launch(
-                    Intent(this@MainActivity, EditActivity::class.java)
-                )
+                val intent = Intent(this@MainActivity, EditActivity::class.java)
+                intent.putExtra("position", -1)
+                editLauncher.launch(intent)
             }
         }
     }

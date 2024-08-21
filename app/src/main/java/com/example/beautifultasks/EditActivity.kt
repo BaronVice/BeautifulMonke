@@ -22,17 +22,40 @@ class EditActivity : AppCompatActivity() {
         binding = ActivityEditBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         initComponents()
         initButtons()
+
+        if (intent.getIntExtra("position", -1) != -1){
+            val taskToEdit = intent.getSerializableExtra("task") as Task
+            binding.apply {
+                imageView.setImageResource(taskToEdit.imageId)
+
+                edTitle.setText(taskToEdit.name)
+                edDesc.setText(taskToEdit.description)
+                bDone.text = "Edit"
+
+                val c = Color.parseColor(taskToEdit.color)
+                bNext.setBackgroundColor(c)
+                bDone.setBackgroundColor(c)
+                layout.setBackgroundColor(c)
+
+                val t = Task.findTaskByColor(taskToEdit.color)
+                edTitle.hint = t.first.name
+                edDesc.hint = t.first.description
+
+                taskIndex = t.second
+            }
+        }
     }
 
     private fun initComponents() {
         val task = Task.getTask(taskIndex)
         binding.apply {
             imageView.setImageResource(task.imageId)
-            bNext.setBackgroundColor(Color.parseColor(task.color))
-            bDone.setBackgroundColor(Color.parseColor(task.color))
+            val c = Color.parseColor(task.color)
+            bNext.setBackgroundColor(c)
+            bDone.setBackgroundColor(c)
+            layout.setBackgroundColor(c)
 
             edTitle.hint = task.name
             edDesc.hint = task.description
@@ -55,6 +78,7 @@ class EditActivity : AppCompatActivity() {
 
             val editIntent = Intent().apply {
                 putExtra("task", task)
+                putExtra("position", intent.getIntExtra("position", -1))
             }
             setResult(RESULT_OK, editIntent)
             finish()

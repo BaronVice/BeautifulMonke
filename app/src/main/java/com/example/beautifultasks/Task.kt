@@ -3,10 +3,10 @@ package com.example.beautifultasks
 import java.io.Serializable
 
 data class Task(
-    val imageId: Int,
-    val name: String,
-    val description: String,
-    val color: String
+    var imageId: Int,
+    var name: String,
+    var description: String,
+    var color: String
 ) : Serializable {
     companion object{
         private val tasks = listOf(
@@ -18,5 +18,13 @@ data class Task(
 
         fun getTaskCount() = tasks.size
         fun getTask(i: Int) = tasks[i]
+        fun findTaskByColor(c: String): Pair<Task, Int> {
+            for (i in 0..tasks.size){
+                if (tasks[i].color == c){
+                    return Pair(tasks[i], i)
+                }
+            }
+            return Pair(tasks.last(), tasks.size)
+        }
     }
 }
