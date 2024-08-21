@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.beautifultasks.databinding.TaskItemBinding
 
 class TaskAdapter : RecyclerView.Adapter<TaskAdapter.TaskHolder>() {
-    val taskList = ArrayList<Task>()
+    private val taskList = ArrayList<Task>()
 
     class TaskHolder(item : View) : RecyclerView.ViewHolder(item) {
-        val binding = TaskItemBinding.bind(item)
+        private val binding = TaskItemBinding.bind(item)
 
         fun bind(task: Task) = with(binding){
             im.setImageResource(task.imageId)

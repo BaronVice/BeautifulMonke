@@ -1,8 +1,11 @@
 package com.example.beautifultasks
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -12,8 +15,9 @@ import com.example.beautifultasks.databinding.ActivityMainBinding
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     private val adapter = TaskAdapter()
+    private lateinit var editLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,13 +35,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init(){
-        binding.apply {
-            rcView.layoutManager = GridLayoutManager(this@MainActivity, 3)
-            rcView.adapter = adapter
-            addBtn.setOnClickListener {
-                val task = Task.getTask(Random.nextInt(0,4))
-                addBtn.setBackgroundColor(Color.parseColor(task.color))
+        editLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+                result -> if (result.resultCode == RESULT_OK){
+                val d = result.data
+                val task = d?.getSerializableExtra("task") as Task
                 adapter.addTask(task)
+                binding.addBtn.setBackgroundColor(Color.parseColor(task.color))
+            }
+        }
+
+        binding.apply {
+            rcView.layoutManager = LinearLayoutManager(this@MainActivity)
+            rcView.adapter = adapter
+            addBtn.setOnClickListener{
+                editLauncher.launch(
+                    Intent(this@MainActivity, EditActivity::class.java)
+                )
             }
         }
     }
