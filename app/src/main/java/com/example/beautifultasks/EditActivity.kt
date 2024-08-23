@@ -1,25 +1,24 @@
 package com.example.beautifultasks
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
 import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.beautifultasks.databinding.ActivityEditBinding
+import kotlin.random.Random
 
 class EditActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditBinding
     private var taskIndex = 0
+    private val adapter = TaskAdapter.taskAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         binding = ActivityEditBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
 
         initComponents()
@@ -37,7 +36,7 @@ class EditActivity : AppCompatActivity() {
                 val c = Color.parseColor(taskToEdit.color)
                 bNext.setBackgroundColor(c)
                 bDone.setBackgroundColor(c)
-                layout.setBackgroundColor(c)
+                drawer.setBackgroundColor(c)
 
                 val t = Task.findTaskByColor(taskToEdit.color)
                 edTitle.hint = t.first.name
@@ -45,6 +44,23 @@ class EditActivity : AppCompatActivity() {
 
                 taskIndex = t.second
             }
+        }
+
+        binding.editNV.setNavigationItemSelectedListener {
+            when(it.itemId){
+                R.id.deleteMonke -> {
+                    adapter.deleteTask(intent.getIntExtra("position", 0))
+                    finish()
+                }
+                R.id.cloneMonke -> {
+                    adapter.addTask(formTask())
+                }
+                R.id.randomizeMonke -> {
+                    taskIndex = Random.nextInt(0, 4)
+                    initComponents()
+                }
+            }
+            true
         }
     }
 
@@ -55,11 +71,30 @@ class EditActivity : AppCompatActivity() {
             val c = Color.parseColor(task.color)
             bNext.setBackgroundColor(c)
             bDone.setBackgroundColor(c)
-            layout.setBackgroundColor(c)
+            drawer.setBackgroundColor(c)
 
             edTitle.hint = task.name
             edDesc.hint = task.description
         }
+    }
+
+    private fun addTask() = with(binding){
+        val task = formTask()
+
+        if (bDone.text == "Edit"){
+            adapter.editTask(task, intent.getIntExtra("position", 0))
+        } else {
+            adapter.addTask(task)
+        }
+    }
+
+    private fun formTask(): Task = with(binding){
+        return Task(
+            Task.getTask(taskIndex).imageId,
+            stringOrHint(edTitle),
+            stringOrHint(edDesc),
+            Task.getTask(taskIndex).color
+        )
     }
 
     private fun initButtons() = with(binding) {
@@ -69,18 +104,7 @@ class EditActivity : AppCompatActivity() {
         }
 
         bDone.setOnClickListener {
-            val task = Task(
-                Task.getTask(taskIndex).imageId,
-                stringOrHint(edTitle),
-                stringOrHint(edDesc),
-                Task.getTask(taskIndex).color
-            )
-
-            val editIntent = Intent().apply {
-                putExtra("task", task)
-                putExtra("position", intent.getIntExtra("position", -1))
-            }
-            setResult(RESULT_OK, editIntent)
+            addTask()
             finish()
         }
     }

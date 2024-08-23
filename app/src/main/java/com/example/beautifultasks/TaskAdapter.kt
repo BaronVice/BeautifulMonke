@@ -5,12 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 import com.example.beautifultasks.databinding.TaskItemBinding
 
 class TaskAdapter : RecyclerView.Adapter<TaskAdapter.TaskHolder>() {
     private val taskList = ArrayList<Task>()
     private lateinit var onClickListener: OnClickListener
+
+    companion object{
+        val taskAdapter = TaskAdapter()
+    }
+
 
     class TaskHolder(item : View, private val onClickListener: OnClickListener) : RecyclerView.ViewHolder(item) {
         private val binding = TaskItemBinding.bind(item)
@@ -48,14 +54,18 @@ class TaskAdapter : RecyclerView.Adapter<TaskAdapter.TaskHolder>() {
         return taskList.size
     }
 
-    fun addTask(task: Task, pos: Int){
-        if (pos == -1){
-            taskList.add(task)
-            notifyItemInserted(taskList.size)
-        } else {
-            taskList[pos] = task
-            notifyItemChanged(pos)
-        }
+    fun addTask(task: Task){
+        taskList.add(task)
+        notifyItemInserted(taskList.size)
+    }
 
+    fun editTask(task: Task, pos: Int){
+        taskList[pos] = task
+        notifyItemChanged(pos)
+    }
+
+    fun deleteTask(pos: Int){
+        taskList.removeAt(pos)
+        notifyItemRemoved(pos)
     }
 }

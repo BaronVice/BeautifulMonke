@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item android:title="What shall we do wiz monke?">
+        <menu>
+            <item android:title="Delete" android:id="@+id/deleteMonke" android:icon="@drawable/delete_monke"/>
+            <item android:title="Clone" android:id="@+id/cloneMonke" android:icon="@drawable/funny_face"/>
+            <item android:title="Randomize" android:id="@+id/randomizeMonke" android:icon="@drawable/randomize_monke"/>
+        </menu>
+    </item>
+
+</menu>

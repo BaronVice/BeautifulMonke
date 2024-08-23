@@ -4,8 +4,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,8 +14,7 @@ import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val adapter = TaskAdapter()
-    private lateinit var editLauncher: ActivityResultLauncher<Intent>
+    private val adapter = TaskAdapter.taskAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,20 +40,10 @@ class MainActivity : AppCompatActivity() {
                     // EmployeeDetails Activity
                     intent.putExtra("position", position)
                     intent.putExtra("task", model)
-                    editLauncher.launch(intent)
+                    startActivity(intent)
                 }
             }
         )
-
-        editLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-                result -> if (result.resultCode == RESULT_OK){
-                val d = result.data
-                val pos = d?.getIntExtra("position", -1)
-                val task = d?.getSerializableExtra("task") as Task
-                adapter.addTask(task, pos!!)
-                binding.addBtn.setBackgroundColor(Color.parseColor(task.color))
-            }
-        }
 
         binding.apply {
             rcView.layoutManager = LinearLayoutManager(this@MainActivity)
@@ -64,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             addBtn.setOnClickListener{
                 val intent = Intent(this@MainActivity, EditActivity::class.java)
                 intent.putExtra("position", -1)
-                editLauncher.launch(intent)
+                startActivity(intent)
             }
         }
     }
